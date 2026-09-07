@@ -49,6 +49,7 @@
           type="text"
           class="add-form-name"
           placeholder="Введите ваше имя"
+          id="input"
         />
         <textarea
           type="textarea"
@@ -57,15 +58,79 @@
           rows="4"
         ></textarea>
         <div class="add-form-row">
-          <button class="add-form-button">Написать</button>
+          <button class="add-form-button" id="button">Написать</button>
         </div>
       </div>
     </div>
   </body>
 
   <script>
+
     "use strict";
-    // Код писать здесь
-    console.log("It works!");
+
+
+    const commentsList = document.querySelector('.comments');
+    const nameInput = document.getElementById('input');        
+    const textInput = document.querySelector('.add-form-text');      
+    const addButton = document.getElementById('button');
+
+    function checkInputs() {
+        const name = nameInput.value.trim();
+        const text = textInput.value.trim();
+        addButton.disabled = !(name !== '' && text !== '');
+    }
+
+    nameInput.addEventListener('input', checkInputs);
+    textInput.addEventListener('input', checkInputs);
+
+    addButton.disabled = true;
+    
+    addButton.addEventListener('click', function() {
+        const name = nameInput.value.trim();
+        const text = textInput.value.trim();
+
+        // Простая валидация (на всякий случай)
+        if (name === '' || text === '') {
+            alert('Заполните оба поля!');
+            return;
+        }
+
+        const now = new Date();
+        const day = String(now.getDate()).padStart(2, '0');
+        const month = String(now.getMonth() + 1).padStart(2, '0');
+        const year = String(now.getFullYear()).slice(2); 
+        const hours = String(now.getHours()).padStart(2, '0');
+        const minutes = String(now.getMinutes()).padStart(2, '0');
+        const dateString = `${day}.${month}.${year} ${hours}:${minutes}`;
+
+        function escapeHtml(str) {
+            const div = document.createElement('div');
+            div.textContent = str;
+            return div.innerHTML;
+        }
+
+        const newCommentHTML = `<li class="comment">
+                                  <div class="comment-header">
+                                      <div>${escapeHtml(name)}</div>
+                                      <div>${dateString}</div>
+                                  </div>
+                                  <div class="comment-body">
+                                      <div class="comment-text">${escapeHtml(text)}</div>
+                                  </div>
+                                  <div class="comment-footer">
+                                      <div class="likes">
+                                          <span class="likes-counter">0</span>
+                                          <button class="like-button"></button>
+                                      </div>
+                                  </div>
+                              </li>`;
+
+        commentsList.innerHTML += newCommentHTML;
+
+        nameInput.value = '';
+        textInput.value = '';
+        addButton.disabled = true;
+    });
+        console.log("It works!");
   </script>
 </html>
