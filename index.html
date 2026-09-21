@@ -67,13 +67,80 @@
   <script>
 
     "use strict";
-
+    const comments = [
+      {
+          name: "Глеб Фокин",
+          date: "12.02.22 12:18",
+          text: "Это будет первый комментарий на этой странице",
+          likes: 3,
+          isLiked: false,
+      },
+      {
+          name: "Варвара Н.",
+          date: "13.02.22 19:22",
+          text: "Мне нравится как оформлена эта страница! ❤",
+          likes: 75,
+          isLiked: true,
+      },
+    ];
 
     const commentsList = document.querySelector('.comments');
     const nameInput = document.getElementById('input');        
     const textInput = document.querySelector('.add-form-text');      
     const addButton = document.getElementById('button');
+    function escapeHtml(str) {
+    const div = document.createElement('div');
+    div.textContent = str;
+    return div.innerHTML;
+    }
+    function renderComments() {
+    const html = comments
+        .map((comment, index) => {
+            const likeClass = comment.isLiked ? "-active-like" : "";
 
+            return `
+                <li class="comment">
+                    <div class="comment-header">
+                        <div>${escapeHtml(comment.name)}</div>
+                        <div>${escapeHtml(comment.date)}</div>
+                    </div>
+                    <div class="comment-body">
+                        <div class="comment-text">${escapeHtml(comment.text)}</div>
+                    </div>
+                    <div class="comment-footer">
+                        <div class="likes">
+                            <span class="likes-counter">${comment.likes}</span>
+                            <button class="like-button ${likeClass}" data-index="${index}"></button>
+                        </div>
+                    </div>
+                </li>
+            `;
+          })
+          .join("");
+
+        commentsList.innerHTML = html;
+    }
+
+    renderComments();
+
+    commentsList.addEventListener("click", (event) => {
+    const likeButton = event.target.closest(".like-button");
+    if (!likeButton) return;
+
+    const index = Number(likeButton.dataset.index);
+    const comment = comments[index];
+
+    if (comment.isLiked) {
+        comment.likes -= 1;
+        comment.isLiked = false;
+    } else {
+        comment.likes += 1;
+        comment.isLiked = true;
+    }
+
+    renderComments();
+    });
+    
     function checkInputs() {
         const name = nameInput.value.trim();
         const text = textInput.value.trim();
@@ -126,7 +193,14 @@
                               </li>`;
 
         commentsList.innerHTML += newCommentHTML;
-
+        comments.push({
+        name: name,
+        date: dateString,
+        text: text,
+        likes: 0,
+        isLiked: false,
+        });
+        renderComments();
         nameInput.value = '';
         textInput.value = '';
         addButton.disabled = true;
