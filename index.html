@@ -88,11 +88,15 @@
     const nameInput = document.getElementById('input');        
     const textInput = document.querySelector('.add-form-text');      
     const addButton = document.getElementById('button');
+
     function escapeHtml(str) {
-    const div = document.createElement('div');
-    div.textContent = str;
-    return div.innerHTML;
+      return String(str)
+          .replaceAll("&", "&amp;")
+          .replaceAll("<", "&lt;")
+          .replaceAll(">", "&gt;")
+          .replaceAll('"', "&quot;");
     }
+
     function renderComments() {
     const html = comments
         .map((comment, index) => {
@@ -125,20 +129,34 @@
 
     commentsList.addEventListener("click", (event) => {
     const likeButton = event.target.closest(".like-button");
-    if (!likeButton) return;
+    if (likeButton) {
+        const commentEl = likeButton.closest(".comment");
+        const index = Number(commentEl.dataset.index);
+        const comment = comments[index];
 
-    const index = Number(likeButton.dataset.index);
-    const comment = comments[index];
+        if (comment.isLiked) {
+            comment.likes -= 1;
+            comment.isLiked = false;
+        } else {
+            comment.likes += 1;
+            comment.isLiked = true;
+        }
 
-    if (comment.isLiked) {
-        comment.likes -= 1;
-        comment.isLiked = false;
-    } else {
-        comment.likes += 1;
-        comment.isLiked = true;
+        renderComments();
+        return;
     }
 
-    renderComments();
+        const commentEl = event.target.closest(".comment");
+        if (!commentEl) return;
+
+        const index = Number(commentEl.dataset.index);
+        const comment = comments[index];
+
+        nameInput.value = comment.name;
+        textInput.value = `> ${comment.text}\n\n`;
+        textInput.focus();
+
+        checkInputs();
     });
     
     function checkInputs() {
@@ -156,7 +174,7 @@
         const name = nameInput.value.trim();
         const text = textInput.value.trim();
 
-        // Простая валидация (на всякий случай)
+        
         if (name === '' || text === '') {
             alert('Заполните оба поля!');
             return;
