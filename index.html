@@ -155,8 +155,8 @@
             const index = Number(commentEl.dataset.index);
             const comment = comments[index];
 
-            nameInput.value = comment.name;
-            textInput.value = `> ${comment.text}\n\n`;
+            nameInput.value = nameInput.value.trim();
+            textInput.value = `${comment.name}\n > ${comment.text}\n\n`;
             textInput.focus();
 
             
