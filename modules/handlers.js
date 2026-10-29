@@ -1,11 +1,14 @@
-import { comments } from "./data.js";
+import { comments, updateComments } from "./data.js";
 import { renderComments } from "./render.js";
+import { formatDate } from "./formatDate.js";
+import { mapCommentsFromApi } from "./mapCommentsFromApi.js";
+import { getComments } from "./getComments.js";
 
 export function initHandlers() {
-  const commentsList = document.querySelector(".comments");
   const nameInput = document.getElementById("input");
   const textInput = document.querySelector(".add-form-text");
   const addButton = document.getElementById("button");
+  const commentsList = document.querySelector(".comments");
 
   commentsList.addEventListener("click", (event) => {
     const likeButton = event.target.closest(".like-button");
@@ -22,7 +25,7 @@ export function initHandlers() {
         comment.isLiked = true;
       }
 
-      renderComments(comments, commentsList);
+      renderComments(comments);
       return;
     }
 
@@ -58,26 +61,21 @@ export function initHandlers() {
       return;
     }
 
-    const now = new Date();
-    const day = String(now.getDate()).padStart(2, "0");
-    const month = String(now.getMonth() + 1).padStart(2, "0");
-    const year = String(now.getFullYear()).slice(2);
-    const hours = String(now.getHours()).padStart(2, "0");
-    const minutes = String(now.getMinutes()).padStart(2, "0");
-    const dateString = `${day}.${month}.${year} ${hours}:${minutes}`;
-
-    comments.push({
-      name: name,
-      date: dateString,
-      text: text,
-      likes: 0,
-      isLiked: false,
-    });
-
-    renderComments(comments, commentsList);
-
+    fetch("https://wedev-api.sky.pro/api/v1/akamentseva/comments", {
+      method: "POST",
+      body: JSON.stringify({ name, text }),
+    })
+      .then((response) => {
+        return response.json();
+      })
+      .then((data) => {
+        return getComments().then((data) => {
+          const newComments = mapCommentsFromApi(data.comments);
+          updateComments(newComments);
+          renderComments(newComments);
+        });
+      });
     nameInput.value = "";
     textInput.value = "";
-    addButton.disabled = true;
   });
 }
