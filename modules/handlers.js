@@ -1,6 +1,6 @@
 import { comments, updateComments } from "./data.js";
 import { renderComments } from "./render.js";
-import { formatDate } from "./formatDate.js";
+
 import { mapCommentsFromApi } from "./mapCommentsFromApi.js";
 import { getComments } from "./getComments.js";
 import { delay } from "./delay.js";
