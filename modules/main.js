@@ -18,3 +18,4 @@ getComments().then((data) => {
 });
 
 initHandlers();
+console.log("Its work");
