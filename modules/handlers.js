@@ -62,30 +62,43 @@ export function initHandlers() {
       return;
     }
 
-    if (name.length < 3 || text.length < 3) {
-      alert("Имя и комментарий должны содержать не менее 3 символов!");
-      nameInput.value = "";
-      textInput.value = "";
-      return;
-    }
-
     fetch("https://wedev-api.sky.pro/api/v1/akamentseva/comments", {
       method: "POST",
-      body: JSON.stringify({ name, text }),
+      body: JSON.stringify({ name, text, forceError: true }),
     })
       .then((response) => {
+        if (response.status === 400) {
+          throw new Error("400");
+        }
+        if (response.status >= 500) {
+          throw new Error("500");
+        }
+        if (!response.ok) {
+          throw new Error("network");
+        }
         return response.json();
       })
       .then((data) => {
         return getComments().then((data) => {
-          addButton.disabled = false;
-          addButton.textContent = "Написать";
           nameInput.value = "";
           textInput.value = "";
           const newComments = mapCommentsFromApi(data.comments);
           updateComments(newComments);
           renderComments(newComments);
         });
+      })
+      .catch((error) => {
+        if (error.message === "400") {
+          alert("Ошибка: Имя и комментарий должны быть не менее 3 символов.");
+        } else if (error.message === "500") {
+          alert("Сервер упал. Попробуйте позже.");
+        } else {
+          alert("Что-то пошло не так. Проверьте интернет.");
+        }
+      })
+      .finally(() => {
+        addButton.disabled = false;
+        addButton.textContent = "Написать";
       });
   });
 }

@@ -5,7 +5,7 @@ export const mapCommentsFromApi = (comments) => {
       ...comment,
       name: comment.author.name,
       date: formatDate(comment.date),
-      isLikeLoading: false,
+      isLikeLoading: true,
     };
   });
 };
