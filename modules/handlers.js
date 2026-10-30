@@ -57,11 +57,15 @@ export function initHandlers() {
     const name = nameInput.value.trim();
     const text = textInput.value.trim();
 
-    addButton.disabled = true;
-    addButton.textContent = "Отправление комментария";
-
     if (name === "" || text === "") {
       alert("Заполните оба поля!");
+      return;
+    }
+
+    if (name.length < 3 || text.length < 3) {
+      alert("Имя и комментарий должны содержать не менее 3 символов!");
+      nameInput.value = "";
+      textInput.value = "";
       return;
     }
 
