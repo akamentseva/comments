@@ -6,6 +6,8 @@ export function renderComments(comments) {
   const html = comments
     .map((comment, index) => {
       const likeClass = comment.isLiked ? "-active-like" : "";
+      const loadingClass = comment.isLikeLoading ? "-loading-like" : "";
+      const disabledAttr = comment.isLikeLoading ? "disabled" : "";
       return `
                 <li class="comment" data-index="${index}">
                     <div class="comment-header">
@@ -18,7 +20,10 @@ export function renderComments(comments) {
                     <div class="comment-footer">
                         <div class="likes">
                             <span class="likes-counter">${comment.likes}</span>
-                            <button class="like-button ${likeClass}"></button>
+                            <button class="like-button ${likeClass} ${loadingClass}" 
+                                    data-index="${index}" 
+                                    ${disabledAttr}>
+                            </button>
                         </div>
                     </div>
                 </li>

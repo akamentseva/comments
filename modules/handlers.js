@@ -3,6 +3,7 @@ import { renderComments } from "./render.js";
 import { formatDate } from "./formatDate.js";
 import { mapCommentsFromApi } from "./mapCommentsFromApi.js";
 import { getComments } from "./getComments.js";
+import { delay } from "./delay.js";
 
 export function initHandlers() {
   const nameInput = document.getElementById("input");
@@ -10,20 +11,21 @@ export function initHandlers() {
   const addButton = document.getElementById("button");
   const commentsList = document.querySelector(".comments");
 
-  commentsList.addEventListener("click", (event) => {
+  commentsList.addEventListener("click", async (event) => {
     const likeButton = event.target.closest(".like-button");
     if (likeButton) {
       const commentEl = likeButton.closest(".comment");
       const index = Number(commentEl.dataset.index);
       const comment = comments[index];
 
-      if (comment.isLiked) {
-        comment.likes -= 1;
-        comment.isLiked = false;
-      } else {
-        comment.likes += 1;
-        comment.isLiked = true;
-      }
+      if (comment.isLikeLoading) return;
+      comment.isLikeLoading = true;
+      renderComments(comments);
+      await delay(2000);
+
+      comment.likes = comment.isLiked ? comment.likes - 1 : comment.likes + 1;
+      comment.isLiked = !comment.isLiked;
+      comment.isLikeLoading = false;
 
       renderComments(comments);
       return;
@@ -56,6 +58,9 @@ export function initHandlers() {
     const name = nameInput.value.trim();
     const text = textInput.value.trim();
 
+    addButton.disabled = true;
+    addButton.textContent = "Отправление комментария";
+
     if (name === "" || text === "") {
       alert("Заполните оба поля!");
       return;
@@ -70,12 +75,14 @@ export function initHandlers() {
       })
       .then((data) => {
         return getComments().then((data) => {
+          addButton.disabled = false;
+          addButton.textContent = "Написать";
+          nameInput.value = "";
+          textInput.value = "";
           const newComments = mapCommentsFromApi(data.comments);
           updateComments(newComments);
           renderComments(newComments);
         });
       });
-    nameInput.value = "";
-    textInput.value = "";
   });
 }
