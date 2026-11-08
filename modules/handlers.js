@@ -3,6 +3,7 @@ import { renderComments } from "./render.js";
 import { mapCommentsFromApi } from "./mapCommentsFromApi.js";
 import { getComments } from "./getComments.js";
 import { delay } from "./delay.js";
+import { getToken, getUserName } from "./auth.js";
 
 export function initHandlers() {
   const nameInput = document.getElementById("input");
@@ -57,14 +58,23 @@ export function initHandlers() {
     const name = nameInput.value.trim();
     const text = textInput.value.trim();
 
+    const token = getToken();
+    if (!token) {
+      alert("Сначала войдите");
+      return;
+    }
+
     if (name === "" || text === "") {
       alert("Заполните оба поля!");
       return;
     }
 
-    fetch("https://wedev-api.sky.pro/api/v1/akamentseva/comments", {
+    fetch("https://wedev-api.sky.pro/api/v2/akamentseva/comments", {
       method: "POST",
       body: JSON.stringify({ name, text, forceError: true }),
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
     })
       .then((response) => {
         if (response.status === 400) {
@@ -80,7 +90,7 @@ export function initHandlers() {
       })
       .then((data) => {
         return getComments().then((data) => {
-          nameInput.value = "";
+          nameInput.value = getUserName() || "";
           textInput.value = "";
           const newComments = mapCommentsFromApi(data.comments);
           updateComments(newComments);

@@ -154,3 +154,16 @@ body {
 .-loading-like {
   animation: rotating 2s linear infinite;
 }
+
+.login-form {
+  max-width: 300px;
+  margin: 50px auto;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.login-form input,
+.login-form button {
+  padding: 10px;
+  font-size: 16px;
+}
