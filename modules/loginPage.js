@@ -29,7 +29,7 @@ export function renderLoginPage(onLoginSuccess) {
 
     try {
       const response = await fetch(
-        " https://wedev-api.sky.pro/api/akamentseva/login",
+        " https://wedev-api.sky.pro/api/user/login",
         {
           method: "POST",
           body: JSON.stringify({ login, password }),
