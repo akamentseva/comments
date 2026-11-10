@@ -69,7 +69,7 @@ export function initHandlers() {
       return;
     }
 
-    fetch("https://wedev-api.sky.pro/api/akamentseva/comments", {
+    fetch("https://wedev-api.sky.pro/api/akamentseva", {
       method: "POST",
       body: JSON.stringify({ name, text, forceError: true }),
       headers: {
