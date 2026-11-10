@@ -1,4 +1,4 @@
-const baseURL = "https://wedev-api.sky.pro/api/v2/akamentseva/comments";
+const baseURL = "https://wedev-api.sky.pro/api/akamentseva/comments";
 
 export const getComments = () => {
   return fetch(baseURL, {

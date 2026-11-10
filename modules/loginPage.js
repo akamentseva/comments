@@ -29,10 +29,9 @@ export function renderLoginPage(onLoginSuccess) {
 
     try {
       const response = await fetch(
-        "https://wedev-api.sky.pro/api/v2/akamentseva/login",
+        " https://wedev-api.sky.pro/api/akamentseva/login",
         {
           method: "POST",
-          headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ login, password }),
         },
       );
